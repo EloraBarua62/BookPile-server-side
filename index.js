@@ -21,6 +21,15 @@ async function run()
         await client.connect();
         const booksCollection = client.db('BookPile').collection('books');
 
+
+        // GET API for all books
+        app.get('/books', async(req,res)=>{
+            const query = {};
+            const cursor = booksCollection.find(query);
+            const books = await cursor.toArray();
+            res.send(books);
+        })
+
     }
     finally
     {
