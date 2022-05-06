@@ -32,12 +32,37 @@ async function run()
 
 
         // GET API for selected book
-        app.get('/books/:id', async(req,res) => {
+        app.get('/books/:id', async (req, res) => {
             const id = req.params.id;
             const query = {_id:ObjectId(id)};
             const book = await booksCollection.findOne(query);
-            res.send(book); 
+            res.send(book);
+        });
+
+
+        // POST API for add new book
+        app.post('/add_book', async(req,res) => {
+            const newBook = req.body;
+            const insertBook = await booksCollection.insertOne(newBook);
+            res.send(insertBook);
         })
+
+
+        // GET API for selected book
+        app.put('/books/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateQuantity = req.body;
+            const query = { _id: ObjectId(id) };
+            const options = {upsert: true};
+            const updateBookInfo = {
+                $set: {
+                    quantity: updateQuantity.quantity
+                }
+            };
+            const book = await booksCollection.updateOne(query,updateBookInfo,options);
+            res.send(book);
+        });
+
 
     }
     finally
