@@ -64,13 +64,21 @@ async function run()
         });
 
 
-        // GET API for load login user
+        // GET API for load items of logged in user
         app.get('/my_items' , async(req,res) => {
             const email = req.query.email;
             const criteria = {email:email};
             const cursor = await booksCollection.find(criteria);
             const books = await cursor.toArray();
             res.send(books);
+        })
+
+
+        app.delete('/books/:id' , async(req,res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const book = await booksCollection.deleteOne(query);
+            res.send(book);
         })
 
 
