@@ -64,6 +64,16 @@ async function run()
         });
 
 
+        // GET API for load login user
+        app.get('/my_items' , async(req,res) => {
+            const email = req.query.email;
+            const criteria = {email:email};
+            const cursor = await booksCollection.find(criteria);
+            const books = await cursor.toArray();
+            res.send(books);
+        })
+
+
     }
     finally
     {
