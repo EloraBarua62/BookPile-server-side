@@ -4,11 +4,38 @@ const app = express();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
+// const jwt = require('jsonwebtoken');
 
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+
+
+// // verifyJWT function
+// function verifyJWT(req, res, next){
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader) {
+//         return res.status(401).send({ message: 'Your access is unauthorized to BookPile' });
+//     }
+
+
+//     const token = authHeader.split(' ')[1];
+//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRECT, (err, decoded) => {
+//         if (err) {
+//             return res.status(403).send({ message: 'BookPile authority forbid your access' })
+//         }
+//         console.log('decoded', decoded);
+//         req.decoded = decoded;
+//         next();
+//     })
+
+
+//     console.log('inside verify function', authHeader);
+//     next();
+// }
+
 
 
 // Database connection
@@ -20,6 +47,16 @@ async function run()
     try{
         await client.connect();
         const booksCollection = client.db('BookPile').collection('books');
+
+
+        // // GET API for get token
+        // app.post('/login' , async(req,res) => {
+        //     const user = req.body;
+        //     const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        //         expiresIn:'1d'
+        //     });
+        //     res.send({accessToken});
+        // })
 
 
         // GET API for all books
@@ -65,13 +102,25 @@ async function run()
 
 
         // GET API for load items of logged in user
-        app.get('/my_items' , async(req,res) => {
+        app.get('/my_items' ,  async(req,res) => {
             const email = req.query.email;
             const criteria = {email:email};
             const cursor = await booksCollection.find(criteria);
             const books = await cursor.toArray();
             res.send(books);
         })
+
+
+        // // GET API for load items of logged in user
+        // app.get('/my_items' , verifyJWT ,  async(req,res) => {
+        //     // const authHeader = req.headers.authorization;
+        //     // console.log(authHeader);
+        //     const email = req.query.email;
+        //     const criteria = {email:email};
+        //     const cursor = await booksCollection.find(criteria);
+        //     const books = await cursor.toArray();
+        //     res.send(books);
+        // })
 
 
         app.delete('/books/:id' , async(req,res) => {
